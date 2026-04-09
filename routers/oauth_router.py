@@ -23,7 +23,7 @@ router = APIRouter(prefix="/oauth/google", tags=["oauth"])
 
 @router.get("/start")
 def oauth_start(user_id: str = Query(...), db: Session = Depends(get_db)):
-    db_user = db.query(Users).filter(Users.id == user_id).first()
+    db_user = db.query(Users).filter(Users.user_id == user_id).first()
     if not db_user:
         return HTMLResponse("<h1>Usuario no encontrado</h1>", status_code=404)
     
