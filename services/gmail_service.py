@@ -101,7 +101,7 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
             "includeSpamTrash": False,
         }
         
-        datetime_inicio_obtencion = datetime.datetime(datetime_obtencion_datos, tzinfo=datetime.timezone.utc) if datetime_obtencion_datos else datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)        
+        datetime_inicio_obtencion = datetime_obtencion_datos if datetime_obtencion_datos else datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)        
         hora_obtencion_datos = datetime.datetime.now(datetime.timezone.utc)
 
         date_inicio_ts = int(datetime_inicio_obtencion.timestamp())
