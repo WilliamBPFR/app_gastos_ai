@@ -53,7 +53,7 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
             google_email=user.user.user_email,
             id_log_db=new_log_item.id,
             fecha_inicio_datos_obtenidos=datetime_inicio_obtencion.strftime("%Y-%m-%d %H:%M:%S") if datetime_inicio_obtencion else None,
-            fecha_fin_datos_obtenidos=hora_obtencion_datos,
+            fecha_fin_datos_obtenidos=hora_obtencion_datos.strftime("%Y-%m-%d %H:%M:%S") if hora_obtencion_datos else None,
             messages=[
                 MessageItem(
                     full_msg_id=m["full_msg_id"],
