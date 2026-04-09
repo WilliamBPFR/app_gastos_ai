@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -29,7 +31,7 @@ def list_connected_users(db: Session = Depends(get_db)):
 async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
     try:
         google_user_log = db.query(UserGoogleConnections).filter_by(user_id=payload.user_id).first()
-        if google_user_log.last_email_history_checkup and google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos > hora_obtencion_datos:
+        if google_user_log.last_email_history_checkup and google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos > datetime.now(timezone.utc) - timedelta(minutes=5):
             raise HTTPException(status_code=400, detail="No se pudieron obtener los correos más recientes. El último escaneo exitoso es más reciente que la fecha de obtención de datos actual.")
         
         access_token, user = await get_fresh_access_token(db, payload.user_id)
