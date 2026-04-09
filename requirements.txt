@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+httpx
+sqlalchemy
+psycopg2-binary
+cryptography
+redis
+python-dotenv
+boto3
+python-multipart
+
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
