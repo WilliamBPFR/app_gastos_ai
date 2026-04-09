@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 
 from db import get_db
+from db_models import Users
 from services.gmail_service import (
     list_recent_messages
 )
@@ -21,7 +22,11 @@ from services.google_api_service import build_google_auth_url, exchange_code_for
 router = APIRouter(prefix="/oauth/google", tags=["oauth"])
 
 @router.get("/start")
-def oauth_start(user_id: str = Query(...)):
+def oauth_start(user_id: str = Query(...), db: Session = Depends(get_db)):
+    db_user = db.query(Users).filter(Users.id == user_id).first()
+    if not db_user:
+        return HTMLResponse("<h1>Usuario no encontrado</h1>", status_code=404)
+    
     url = build_google_auth_url(user_id)
     return RedirectResponse(url)
 
