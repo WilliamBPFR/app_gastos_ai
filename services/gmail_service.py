@@ -136,7 +136,7 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
     
     except Exception as e:
         print(f"Error al listar mensajes: {e}")
-        return []
+        raise ValueError(f"Error al listar mensajes: {str(e)}")
   
 async def get_message_detail(access_token: str, message_id: str):
     async with httpx.AsyncClient(timeout=20) as client:

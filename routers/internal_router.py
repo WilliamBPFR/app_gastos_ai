@@ -37,7 +37,7 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
         access_token, user = await get_fresh_access_token(db, payload.user_id)
 
         messages, hora_obtencion_datos, datetime_inicio_obtencion = await list_recent_messages(access_token, max_results=20, datetime_obtencion_datos=google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos if google_user_log.last_email_history_checkup else None)
-       
+        
         new_log_item = UserEmailProcessingLogs(
             user_id=user.user.user_id,
             cantidad_correos_obtenidos=len(messages),
