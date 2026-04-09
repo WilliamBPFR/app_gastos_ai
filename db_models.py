@@ -43,11 +43,13 @@ class UserEmailProcessingLogs(Base):
     fecha_terminacion_procesamiento: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
 
     user: Mapped['Users'] = relationship('Users', back_populates='user_email_processing_logs')
+    user_google_connections: Mapped[list['UserGoogleConnections']] = relationship('UserGoogleConnections', back_populates='last_email_history_checkup')
 
 
 class UserGoogleConnections(Base):
     __tablename__ = 'user_google_connections'
     __table_args__ = (
+        ForeignKeyConstraint(['last_email_history_checkup_id'], ['user_email_processing_logs.id'], ondelete='SET NULL', name='fk_user_google_connections_last_email_history_checkup'),
         ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE', name='fk_user_google_connections_user'),
         PrimaryKeyConstraint('id', name='user_google_connections_pkey')
     )
@@ -60,6 +62,7 @@ class UserGoogleConnections(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     scope: Mapped[Optional[str]] = mapped_column(Text)
     token_type: Mapped[Optional[str]] = mapped_column(String(50))
-    last_history_id: Mapped[Optional[str]] = mapped_column(String(100))
+    last_email_history_checkup_id: Mapped[Optional[int]] = mapped_column(Integer)
 
+    last_email_history_checkup: Mapped[Optional['UserEmailProcessingLogs']] = relationship('UserEmailProcessingLogs', back_populates='user_google_connections')
     user: Mapped['Users'] = relationship('Users', back_populates='user_google_connections')

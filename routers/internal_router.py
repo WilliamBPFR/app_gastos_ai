@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from db import get_db
-from db_models import UserEmailProcessingLogs
+from db_models import UserEmailProcessingLogs, UserGoogleConnections
 from fastapi_deps import verify_internal_token
 from schemas import ConnectedUserResponse, CheckUserRequest, CheckUserResponse, MessageItem, AttachmentItem
 from services.user_service import get_connected_users
@@ -28,8 +28,8 @@ def list_connected_users(db: Session = Depends(get_db)):
 @router.post("/gmail/check-user", response_model=CheckUserResponse)
 async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
     try:
-        last_succesful_scan = db.query(UserEmailProcessingLogs).filter_by(user_id=payload.user_id).order_by(UserEmailProcessingLogs.fecha_hora_obtencion_datos.desc()).first()
-        if last_succesful_scan and last_succesful_scan.fecha_hora_obtencion_datos > hora_obtencion_datos:
+        google_user_log = db.query(UserGoogleConnections).filter_by(user_id=payload.user_id).first()
+        if google_user_log.last_email_history_checkup and google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos > hora_obtencion_datos:
             raise HTTPException(status_code=400, detail="No se pudieron obtener los correos más recientes. El último escaneo exitoso es más reciente que la fecha de obtención de datos actual.")
         
         access_token, user = await get_fresh_access_token(db, payload.user_id)
@@ -44,6 +44,8 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
         )
             
         db.add(new_log_item)
+        google_user_log.last_email_history_checkup = new_log_item
+        
         db.commit()
 
         return CheckUserResponse(

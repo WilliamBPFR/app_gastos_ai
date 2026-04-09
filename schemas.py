@@ -4,6 +4,7 @@ from typing import Optional, List
 class ConnectedUserResponse(BaseModel):
     telegram_chat_id: str
     google_email: Optional[str] = None
+    user_id: Optional[int] = None
 
 class CheckUserRequest(BaseModel):
     user_id: str
