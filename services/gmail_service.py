@@ -132,7 +132,7 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
             })
             # detailed_messages.append(msg)
         
-        return detailed_messages, hora_obtencion_datos
+        return detailed_messages, hora_obtencion_datos, datetime_inicio_obtencion
     
     except Exception as e:
         print(f"Error al listar mensajes: {e}")

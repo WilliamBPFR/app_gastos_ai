@@ -34,7 +34,7 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
         
         access_token, user = await get_fresh_access_token(db, payload.user_id)
 
-        messages, hora_obtencion_datos = await list_recent_messages(access_token, max_results=20)
+        messages, hora_obtencion_datos, datetime_inicio_obtencion = await list_recent_messages(access_token, max_results=20, datetime_obtencion_datos=google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos if google_user_log.last_email_history_checkup else None)
        
         new_log_item = UserEmailProcessingLogs(
             user_id=user.user.user_id,
@@ -52,6 +52,8 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
             connected=True,
             google_email=user.user.user_email,
             id_log_db=new_log_item.id,
+            fecha_inicio_datos_obtenidos=datetime_inicio_obtencion.strftime("%Y-%m-%d %H:%M:%S") if datetime_inicio_obtencion else None,
+            fecha_fin_datos_obtenidos=hora_obtencion_datos,
             messages=[
                 MessageItem(
                     full_msg_id=m["full_msg_id"],

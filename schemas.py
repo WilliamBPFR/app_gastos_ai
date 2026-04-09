@@ -29,4 +29,6 @@ class CheckUserResponse(BaseModel):
     connected: bool
     google_email: Optional[str] = None
     id_log_db: Optional[int] = None
+    fecha_fin_datos_obtenidos: Optional[str] = None
+    fecha_inicio_datos_obtenidos: Optional[str] = None
     messages: List[MessageItem] = []
