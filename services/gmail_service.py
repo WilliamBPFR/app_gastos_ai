@@ -90,6 +90,33 @@ def extract_attachments_from_part(service, message_id, part):
 
     return attachments
 
+def decode_gmail_body(data: str) -> str:
+    padded = data + "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(padded.encode("utf-8")).decode("utf-8", errors="replace")
+
+def extract_bodies_from_part(part):
+    text_plain = None
+    text_html = None
+
+    def decodificar_body(node):
+        nonlocal text_plain, text_html
+
+        mime_type = node.get("mimeType", "")
+        body = node.get("body", {})
+        data = body.get("data")
+
+        if mime_type == "text/plain" and data and text_plain is None:
+            text_plain = decode_gmail_body(data)
+
+        if mime_type == "text/html" and data and text_html is None:
+            text_html = decode_gmail_body(data)
+
+        for child in node.get("parts", []):
+            decodificar_body(child)
+
+    decodificar_body(part)
+    return text_plain, text_html
+
 async def list_recent_messages(access_token: str, max_results: int = 5, datetime_obtencion_datos: datetime.datetime | None = None):
     try: 
         print("Listando mensajes recientes con access_token:", access_token[:10] + "...")
@@ -118,6 +145,7 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
             full_msg = (service.users().messages().get(userId="me", id=message_id, format="full").execute())  # format="metadata", metadataHeaders=["From", "Subject", "Date", "To", "Cc", "Bcc", "ReplyTo"]).execute())
             
             payload = full_msg.get("payload", {})
+            body_text_plain, body_text_html = extract_bodies_from_part(payload)
             headers = extract_headers(payload.get("headers", []))
             attachments = extract_attachments_from_part(service, message_id, payload)
 
@@ -128,6 +156,8 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
                 "snippet": full_msg.get("snippet"),
                 "internalDate": full_msg.get("internalDate"),
                 "headers": headers,
+                "body_text_plain": body_text_plain,
+                "body_text_html": body_text_html,
                 "attachments": attachments,
             })
             # detailed_messages.append(msg)

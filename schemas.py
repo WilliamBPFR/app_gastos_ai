@@ -23,6 +23,8 @@ class MessageItem(BaseModel):
     snippet: Optional[str] = None
     internalDate: Optional[str] = None
     headers: Optional[dict] = None
+    body_text_plain: Optional[str] = None
+    body_text_html: Optional[str] = None
     attachments: Optional[List[AttachmentItem]] = None
 
 class CheckUserResponse(BaseModel):

@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
     yield
     # Aquí puedes colocar cualquier código de limpieza que necesites
 
-app = FastAPI(title="Gmail OAuth Backend", lifespan=lifespan, version="1.1.3", description="Backend para autenticación OAuth con Gmail, con verificación de usuario en el endpoint de inicio y manejo de conexiones de usuarios.")
+app = FastAPI(title="Gmail OAuth Backend", lifespan=lifespan, version="1.2.0", description="Backend para autenticación OAuth con Gmail, con verificación de usuario en el endpoint de inicio y manejo de conexiones de usuarios.")
 
 app.add_middleware(
     CORSMiddleware,
