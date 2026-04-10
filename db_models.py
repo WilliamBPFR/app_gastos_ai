@@ -1,7 +1,8 @@
 from typing import Optional
 import datetime
+import decimal
 
-from sqlalchemy import Boolean, DateTime, ForeignKeyConstraint, Identity, Integer, PrimaryKeyConstraint, String, Text, UniqueConstraint, text
+from sqlalchemy import Boolean, DateTime, ForeignKeyConstraint, Identity, Integer, Numeric, PrimaryKeyConstraint, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
@@ -41,6 +42,7 @@ class UserEmailProcessingLogs(Base):
     procesamiento_ejecutado: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text('false'))
     cantidad_correos_validos: Mapped[Optional[int]] = mapped_column(Integer)
     fecha_terminacion_procesamiento: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    total_segundos_retrieval_correos: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(10, 2))
 
     user: Mapped['Users'] = relationship('Users', back_populates='user_email_processing_logs')
     user_google_connections: Mapped[list['UserGoogleConnections']] = relationship('UserGoogleConnections', back_populates='last_email_history_checkup')

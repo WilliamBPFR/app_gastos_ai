@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-
+import time
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -30,6 +30,7 @@ def list_connected_users(db: Session = Depends(get_db)):
 @router.post("/gmail/check-user", response_model=CheckUserResponse)
 async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
     try:
+        start_time = time.time()
         google_user_log = db.query(UserGoogleConnections).filter_by(user_id=payload.user_id).first()
         if google_user_log.last_email_history_checkup and google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos > datetime.now():
             raise HTTPException(status_code=400, detail="No se pudieron obtener los correos más recientes. El último escaneo exitoso es más reciente que la fecha de obtención de datos actual.")
@@ -37,19 +38,21 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
         access_token, user = await get_fresh_access_token(db, payload.user_id)
 
         messages, hora_obtencion_datos, datetime_inicio_obtencion = await list_recent_messages(access_token, max_results=20, datetime_obtencion_datos=google_user_log.last_email_history_checkup.fecha_hora_obtencion_datos if google_user_log.last_email_history_checkup else None)
-        
+        elapsed_time = round(time.time() - start_time, 2)
+        print(f"Tiempo total para obtener mensajes: {elapsed_time:.2f} segundos")
         new_log_item = UserEmailProcessingLogs(
             user_id=user.user.user_id,
             cantidad_correos_obtenidos=len(messages),
             cantidad_attachments=sum(len(m.get("attachments", [])) for m in messages),
-            fecha_hora_obtencion_datos=hora_obtencion_datos
+            fecha_hora_obtencion_datos=hora_obtencion_datos,
+            total_segundos_retrieval_correos=elapsed_time,
         )
             
         db.add(new_log_item)
         google_user_log.last_email_history_checkup = new_log_item
         
         db.commit()
-
+        
         return CheckUserResponse(
             connected=True,
             google_email=user.user.user_email,
@@ -64,6 +67,8 @@ async def check_user(payload: CheckUserRequest, db: Session = Depends(get_db)):
                     snippet=m.get("snippet"),
                     internalDate=m.get("internalDate"),
                     headers=m.get("headers"),
+                    body_text_html=m.get("body_text_html"),
+                    body_text_plain=m.get("body_text_plain"),
                     attachments=[
                         AttachmentItem(**a)
                         for a in m.get("attachments", [])

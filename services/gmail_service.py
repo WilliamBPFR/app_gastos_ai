@@ -94,22 +94,50 @@ def decode_gmail_body(data: str) -> str:
     padded = data + "=" * (-len(data) % 4)
     return base64.urlsafe_b64decode(padded.encode("utf-8")).decode("utf-8", errors="replace")
 
-def extract_bodies_from_part(part):
+def extract_bodies_from_part(service, message_id: str, part):
     text_plain = None
     text_html = None
+
+    def get_part_data(node, mime_type: str) -> str | None:
+        body = node.get("body", {})
+        data = body.get("data")
+        if data:
+            return data
+
+        # Fallback only for text bodies, never for binary attachments.
+        if mime_type not in ("text/plain", "text/html"):
+            return None
+
+        attachment_id = body.get("attachmentId")
+        if attachment_id:
+            attachment = (
+                service.users()
+                .messages()
+                .attachments()
+                .get(
+                    userId="me",
+                    messageId=message_id,
+                    id=attachment_id,
+                )
+                .execute()
+            )
+            return attachment.get("data")
+
+        return None
 
     def decodificar_body(node):
         nonlocal text_plain, text_html
 
         mime_type = node.get("mimeType", "")
-        body = node.get("body", {})
-        data = body.get("data")
+        if mime_type == "text/plain" and text_plain is None:
+            data = get_part_data(node, mime_type)
+            if data:
+                text_plain = decode_gmail_body(data)
 
-        if mime_type == "text/plain" and data and text_plain is None:
-            text_plain = decode_gmail_body(data)
-
-        if mime_type == "text/html" and data and text_html is None:
-            text_html = decode_gmail_body(data)
+        if mime_type == "text/html" and text_html is None:
+            data = get_part_data(node, mime_type)
+            if data:
+                text_html = decode_gmail_body(data)
 
         for child in node.get("parts", []):
             decodificar_body(child)
@@ -145,7 +173,7 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
             full_msg = (service.users().messages().get(userId="me", id=message_id, format="full").execute())  # format="metadata", metadataHeaders=["From", "Subject", "Date", "To", "Cc", "Bcc", "ReplyTo"]).execute())
             
             payload = full_msg.get("payload", {})
-            body_text_plain, body_text_html = extract_bodies_from_part(payload)
+            body_text_plain, body_text_html = extract_bodies_from_part(service, message_id, payload)
             headers = extract_headers(payload.get("headers", []))
             attachments = extract_attachments_from_part(service, message_id, payload)
 
@@ -156,8 +184,8 @@ async def list_recent_messages(access_token: str, max_results: int = 5, datetime
                 "snippet": full_msg.get("snippet"),
                 "internalDate": full_msg.get("internalDate"),
                 "headers": headers,
-                "body_text_plain": body_text_plain,
-                "body_text_html": body_text_html,
+                "body_text_plain": body_text_plain if body_text_plain else None,
+                "body_text_html": body_text_html if body_text_html else None,
                 "attachments": attachments,
             })
             # detailed_messages.append(msg)
