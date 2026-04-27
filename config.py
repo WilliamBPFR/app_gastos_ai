@@ -16,6 +16,7 @@ class Config:
     TOKEN_ENCRYPTION_KEY = os.getenv("TOKEN_ENCRYPTION_KEY", "")
     INTERNAL_API_TOKEN = os.getenv("INTERNAL_API_TOKEN", "")
     APP_BASE_URL = os.getenv("APP_BASE_URL", "")
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
     STATE_TTL_SECONDS = int(os.getenv("STATE_TTL_SECONDS", "600"))
     S3_ENDPOINT_URL: str = os.getenv("S3_ENDPOINT_URL", "").strip()
     S3_ACCESS_KEY_ID: str = os.getenv("S3_ACCESS_KEY_ID", "").strip()

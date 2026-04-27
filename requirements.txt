@@ -8,6 +8,9 @@ redis
 python-dotenv
 boto3
 python-multipart
+sqlacodegen
+pwdlib[argon2]
+resend
 
 google-api-python-client 
 google-auth-httplib2 

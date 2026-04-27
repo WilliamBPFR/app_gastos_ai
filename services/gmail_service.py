@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import datetime
 
 from config import config
-from db_models import UserGoogleConnections
+from db.db_models import UserGoogleConnections
 from utils.crypto_utils import decrypt_text
 from services.s3_service import s3_service
 

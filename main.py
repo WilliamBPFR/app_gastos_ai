@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from db import Base, engine
+from db.db import Base, engine
 from routers.oauth_router import router as oauth_router
 from routers.internal_router import router as internal_router
 from routers.health_router import router as health_router
 from routers.files_router import router as files_router
+from routers.web_app_endpoints import web_app_router
 from contextlib import asynccontextmanager
 
 
@@ -29,6 +30,7 @@ app.include_router(health_router)
 app.include_router(oauth_router)
 app.include_router(internal_router)
 app.include_router(files_router)
+app.include_router(web_app_router)
 
 if __name__ == "__main__":
     import uvicorn

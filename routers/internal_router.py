@@ -3,10 +3,10 @@ import time
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from db import get_db
-from db_models import UserEmailProcessingLogs, UserGoogleConnections
+from db.db import get_db
+from db.db_models import UserEmailProcessingLogs, UserGoogleConnections
 from fastapi_deps import verify_internal_token
-from schemas import ConnectedUserResponse, CheckUserRequest, CheckUserResponse, MessageItem, AttachmentItem
+from schemas.google_connection_schemas import ConnectedUserResponse, CheckUserRequest, CheckUserResponse, MessageItem, AttachmentItem
 from services.user_service import get_connected_users
 from services.gmail_service import get_fresh_access_token, list_recent_messages
 

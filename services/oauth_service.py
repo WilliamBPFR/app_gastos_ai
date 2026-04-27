@@ -6,8 +6,8 @@ import httpx
 from sqlalchemy.orm import Session
 
 from config import config
-from redis_client import redis_client
-from db_models import UserGoogleConnections, Users
+from db.redis_client import redis_client
+from db.db_models import UserGoogleConnections, Users
 from utils.crypto_utils import encrypt_text
 
 STATE_PREFIX = "oauth_state:"

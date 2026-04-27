@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 
-from db import get_db
-from db_models import Users
+from db.db import get_db
+from db.db_models import Users
 from services.gmail_service import (
     list_recent_messages
 )

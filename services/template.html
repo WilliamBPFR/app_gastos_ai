@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Codigo de restablecimiento</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f6f8; margin:0; padding:30px 0;">
+		<tr>
+			<td align="center">
+				<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+
+					<tr>
+						<td align="center" style="background:linear-gradient(135deg, #2563eb, #1d4ed8); padding:40px 30px;">
+							<h1 style="margin:0; color:#ffffff; font-size:28px; font-weight:bold;">
+								Registro de Gastos Automatico
+							</h1>
+							<p style="margin:12px 0 0; color:#dbeafe; font-size:16px;">
+								Codigo para restablecer tu contrasena
+							</p>
+						</td>
+					</tr>
+
+					<tr>
+						<td style="padding:40px 30px; color:#333333;">
+							<p style="margin:0 0 20px; font-size:16px; line-height:1.6;">
+								Hola, {{user_name}}
+							</p>
+
+							<p style="margin:0 0 24px; font-size:16px; line-height:1.6;">
+								Recibimos una solicitud para restablecer la contrasena de tu cuenta. Usa el siguiente codigo para continuar con el proceso:
+							</p>
+
+							<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+								<tr>
+									<td align="center" style="padding:10px 0 30px;">
+										<div style="display:inline-block; background-color:#eff6ff; border:2px dashed #93c5fd; border-radius:14px; padding:18px 32px; font-size:36px; font-weight:bold; letter-spacing:10px; color:#1d4ed8;">
+											{{reset_code}}
+										</div>
+									</td>
+								</tr>
+							</table>
+
+							<p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#555555;">
+								Este codigo es valido por {{expiry_minutes}} minutos. Por seguridad, no lo compartas con nadie.
+							</p>
+
+							<p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#555555;">
+								Si no solicitaste este cambio, puedes ignorar este correo. Tu contrasena actual seguira siendo la misma.
+							</p>
+
+							<p style="margin:0; font-size:14px; line-height:1.6; color:#6b7280;">
+								Si tienes problemas con el proceso, contacta al equipo de soporte.
+							</p>
+						</td>
+					</tr>
+
+					<tr>
+						<td align="center" style="padding:24px 30px; background-color:#f9fafb; border-top:1px solid #e5e7eb;">
+							<p style="margin:0; font-size:13px; color:#888888; line-height:1.5;">
+								Este es un correo automatico, por favor no respondas a este mensaje.
+							</p>
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

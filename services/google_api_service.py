@@ -3,7 +3,7 @@ import secrets
 from google_auth_oauthlib.flow import Flow
 
 from config import config
-from redis_client import redis_client
+from db.redis_client import redis_client
 from fastapi.concurrency import run_in_threadpool
 
 STATE_PREFIX = "oauth_state:"

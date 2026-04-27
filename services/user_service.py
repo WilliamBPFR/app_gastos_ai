@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from db_models import UserGoogleConnections, Users
+from db.db_models import UserGoogleConnections, Users
 
 
 def get_connected_users(db: Session) -> list[UserGoogleConnections]:
