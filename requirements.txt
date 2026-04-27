@@ -11,6 +11,8 @@ python-multipart
 sqlacodegen
 pwdlib[argon2]
 resend
+pyjwt
+pydantic-settings
 
 google-api-python-client 
 google-auth-httplib2 
