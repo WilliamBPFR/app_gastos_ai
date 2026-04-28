@@ -10,9 +10,9 @@ router = APIRouter(prefix="/auth", tags=["app/auth"])
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
+    response: Response,
     login_request: LoginRequest,
     db: Session = Depends(get_db),
-    response: Response = None
 ):
     try:
         # Get user by email
@@ -92,3 +92,16 @@ async def refresh_token(
     except Exception as e:
         print(f"Error in refresh_token: {e}")
         raise HTTPException(status_code=e.status_code if hasattr(e, 'status_code') else 500, detail=str(e) if hasattr(e, 'detail') else "Internal Server Error")
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(
+        key="refresh_token",
+        path="/auth/refresh",
+        secure=False,       # False en local si no usas HTTPS
+        samesite="none"    # "none" si frontend y backend están en dominios distintos
+    )
+
+    return {
+        "message": "Logged out successfully"
+    }
