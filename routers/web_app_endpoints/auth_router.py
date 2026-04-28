@@ -16,6 +16,7 @@ async def login(
 ):
     try:
         # Get user by email
+        print(f"Attempting login for email: {login_request.email}")
         user = db.query(Users).filter_by(user_email=login_request.email).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -26,17 +27,19 @@ async def login(
         
         # Create access and refresh tokens
         access_token = create_access_token(user.user_id)
-        refresh_token = create_refresh_token(user.user_id)
 
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=False,       # False en local si no usas HTTPS
-            samesite="none",    # "none" si frontend y backend están en dominios distintos
-            max_age=7 * 24 * 60 * 60,
-            path="/auth/refresh",
-        )
+        if login_request.rememberMe:
+            refresh_token = create_refresh_token(user.user_id)
+
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=False,       # False en local si no usas HTTPS
+                samesite="none",    # "none" si frontend y backend están en dominios distintos
+                max_age=7 * 24 * 60 * 60,
+                path="/auth/refresh",
+            )
 
         return TokenResponse(
             access_token=access_token,

@@ -4,6 +4,7 @@ from typing import Optional, List
 class LoginRequest(BaseModel):
     email: str
     password: str
+    rememberMe: Optional[bool] = False
 
 class TokenResponse(BaseModel):
     access_token: str
