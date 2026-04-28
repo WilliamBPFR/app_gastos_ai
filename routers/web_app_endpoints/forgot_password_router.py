@@ -32,7 +32,7 @@ async def create_petition(
         user_reset_password = UserResetPassword(
             user_id=user.user_id,
             verify_code=reset_code,
-            valid_expiration_date=datetime.now(timezone.utc) + timedelta(minutes=10)
+            valid_expiration_date=datetime.now() + timedelta(minutes=10)
         )
         db.add(user_reset_password)
         db.commit()
@@ -60,6 +60,7 @@ async def verify_reset_code(
 ):
     try:
         # Get user by email
+        print(f"Verifying reset code for email: {petition.user_email} with code: {petition.reset_code}")
         user = db.query(Users).filter_by(user_email=petition.user_email).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -74,7 +75,7 @@ async def verify_reset_code(
             raise HTTPException(status_code=400, detail="Invalid reset code")
         
         # Check if the reset code is expired
-        if user_reset_password.valid_expiration_date < datetime.now(timezone.utc):
+        if user_reset_password.valid_expiration_date < datetime.now():
             raise HTTPException(status_code=400, detail="Reset code has expired")
         
         # Check if the reset code is not used
@@ -109,8 +110,8 @@ async def change_password(
             db.add(user_passwords)
         else:
             user_passwords.hash_password = hash_password(petition.new_password)
-            user_passwords.update_date = datetime.now(timezone.utc)
-        user.user_last_interaction = datetime.now(timezone.utc)
+            user_passwords.update_date = datetime.now()
+        user.user_last_interaction = datetime.now()
         db.commit()
         return {"message": "Password changed successfully"}
     except Exception as e:
@@ -130,9 +131,9 @@ async def resend_reset_code(
         
         # Verify if there is an active reset code for the user
         user_reset_password = db.query(UserResetPassword).filter_by(user_id=user.user_id, code_used=False).order_by(UserResetPassword.creation_date.desc()).first()
-        if user_reset_password and user_reset_password.valid_expiration_date > datetime.now(timezone.utc):
+        if user_reset_password and user_reset_password.valid_expiration_date > datetime.now():
             user_reset_password.verify_code = f"{secrets.randbelow(1_000_000):06d}"
-            user_reset_password.valid_expiration_date = datetime.now(timezone.utc) + timedelta(minutes=10)
+            user_reset_password.valid_expiration_date = datetime.now() + timedelta(minutes=10)
         else:
             # Create new reset code
             reset_code = f"{secrets.randbelow(1_000_000):06d}"
@@ -141,7 +142,7 @@ async def resend_reset_code(
             user_reset_password = UserResetPassword(
                 user_id=user.user_id,
                 verify_code=reset_code,
-                valid_expiration_date=datetime.now(timezone.utc) + timedelta(minutes=10)
+                valid_expiration_date=datetime.now() + timedelta(minutes=10)
             )
             db.add(user_reset_password)
         db.commit()

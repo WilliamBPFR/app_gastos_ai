@@ -20,7 +20,10 @@ app = FastAPI(title="Gmail OAuth Backend", lifespan=lifespan, version="1.3.0", d
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
