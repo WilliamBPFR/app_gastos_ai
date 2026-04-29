@@ -1,9 +1,8 @@
 import secrets
 
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Request, status
 from config import config
 
-from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from services.encrypt_service import decode_token
@@ -33,10 +32,12 @@ def verify_internal_token(
 
     return True 
 
-def get_current_user_id(token: str = Depends(oauth2_scheme)) -> int:
+def get_current_user_id(request: Request) -> int:
     try:
+        token = request.cookies.get("access_token")
+        # print(f"Verifying token:{token}")
         payload = decode_token(token)
-
+        # print(f"Decoded payload: {payload}")
         if payload.get("type") != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
