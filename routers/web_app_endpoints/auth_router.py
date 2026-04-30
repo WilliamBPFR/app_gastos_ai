@@ -17,7 +17,7 @@ from fastapi_deps import get_current_user_id
 
 router = APIRouter(prefix="/auth", tags=["app/auth"])
 ACCESS_COOKIE_PATH = "/"
-REFRESH_COOKIE_PATH = "/auth/refresh"
+REFRESH_COOKIE_PATH = "/app/auth/refresh"
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
@@ -40,18 +40,17 @@ async def login(
         session_id = create_session_id()
         access_token = create_access_token(str(user.user_id), session_id=session_id)
 
-        if login_request.rememberMe:
-            refresh_token = create_refresh_token(str(user.user_id), session_id=session_id)
+        refresh_token = create_refresh_token(str(user.user_id), session_id=session_id)
 
-            response.set_cookie(
-                key="refresh_token",
-                value=refresh_token,
-                httponly=True,
-                secure=config.PRODUCTION_MODE,       # False en local si no usas HTTPS
-                samesite="lax",    # "none" si frontend y backend están en dominios distintos
-                max_age=7 * 24 * 60 * 60,
-                path=REFRESH_COOKIE_PATH,
-            )
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=config.PRODUCTION_MODE,       # False en local si no usas HTTPS
+            samesite="lax",    # "none" si frontend y backend están en dominios distintos
+            max_age=7 * 24 * 60 * 60,
+            path=REFRESH_COOKIE_PATH,
+        )
 
         response.set_cookie(
             key="access_token",
@@ -75,7 +74,6 @@ async def login(
 async def refresh_token(
     response: Response,
     refresh_token: str | None = Cookie(default=None, alias="refresh_token"),
-    db: Session = Depends(get_db)
 ):
     
     if not refresh_token:
