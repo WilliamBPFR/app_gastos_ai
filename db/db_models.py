@@ -126,6 +126,7 @@ class UserCategories(Base):
     creation_date: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     category_description: Mapped[Optional[str]] = mapped_column(Text)
     color: Mapped[Optional[str]] = mapped_column(String(50))
+    active: Mapped[Optional[bool]] = mapped_column(Boolean, server_default=text('true'))
 
     user: Mapped['Users'] = relationship('Users', back_populates='user_categories')
     user_financial_transactions: Mapped[list['UserFinancialTransactions']] = relationship('UserFinancialTransactions', back_populates='category')
