@@ -95,3 +95,44 @@ def activate_category(
         return {"message": f"Categoría {'activada' if category.active else 'desactivada'} exitosamente"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/delete/{category_id}")
+def delete_category(
+    category_id: int, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: Session = Depends(get_db)
+):
+    try:
+        select_query = select(UserCategories).where(UserCategories.category_id == category_id, UserCategories.user_id == current_user_id)
+        category = db.execute(select_query).scalars().first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Categoría no encontrada")
+        
+        db.delete(category)
+        db.commit()
+        return {"message": "Categoría eliminada exitosamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@router.put("/update/{category_id}")
+def update_category(
+    category_id: int, 
+    category_update: CategoryCreateModel, 
+    current_user_id: int = Depends(get_current_user_id), 
+    db: Session = Depends(get_db)
+):
+    try:
+        select_query = select(UserCategories).where(UserCategories.category_id == category_id, UserCategories.user_id == current_user_id)
+        category = db.execute(select_query).scalars().first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Categoría no encontrada")
+        
+        category.category_name = category_update.category_name
+        category.category_description = category_update.category_description
+        category.color = category_update.color
+        category.active = category_update.active
+        
+        db.commit()
+        return {"message": "Categoría actualizada exitosamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
