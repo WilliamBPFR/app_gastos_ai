@@ -11,7 +11,7 @@ router = APIRouter(prefix="/categories", tags=["app/categories"])
 
 @router.get("/get-all", response_model=CategoryGetAllResponseModel)
 def get_categories(
-    current_user_id: int = 3, 
+    current_user_id: int = Depends(get_current_user_id), 
     db: Session = Depends(get_db),
     page_number: int = Query(1, ge=1, description="Número de página (mínimo 1)"),
     page_size: int = Query(10, ge=1, le=100, description="Tamaño de página (entre 1 y 100)"),

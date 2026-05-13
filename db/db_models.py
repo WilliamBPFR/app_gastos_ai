@@ -198,6 +198,7 @@ class UserFinancialTransactions(Base):
         CheckConstraint('exchange_rate_used IS NULL OR exchange_rate_used > 0::numeric', name='chk_user_financial_transactions_exchange_rate_positive'),
         CheckConstraint('original_amount >= 0::numeric AND final_amount >= 0::numeric', name='chk_user_financial_transactions_amounts_positive'),
         CheckConstraint("tipo_transaccion::text = ANY (ARRAY['income'::character varying::text, 'expense'::character varying::text])", name='chk_user_financial_transactions_tipo'),
+        CheckConstraint("transaction_source::text = ANY (ARRAY['app'::character varying::text, 'email_analysis'::character varying::text])", name='chk_user_transaction_source'),
         ForeignKeyConstraint(['account_id'], ['user_accounts.account_id'], ondelete='SET NULL', name='fk_user_financial_transactions_account'),
         ForeignKeyConstraint(['category_id'], ['user_categories.category_id'], ondelete='SET NULL', name='fk_user_financial_transactions_category'),
         ForeignKeyConstraint(['exchange_rate_id'], ['exchange_rates.exchange_rate_id'], ondelete='SET NULL', name='fk_user_financial_transactions_exchange_rate'),
@@ -225,6 +226,7 @@ class UserFinancialTransactions(Base):
     exchange_rate_id: Mapped[Optional[int]] = mapped_column(Integer)
     exchange_rate_used: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 8))
     descripcion_transaccion: Mapped[Optional[str]] = mapped_column(Text)
+    transaction_source: Mapped[Optional[str]] = mapped_column(String(20))
 
     account: Mapped[Optional['UserAccounts']] = relationship('UserAccounts', back_populates='user_financial_transactions')
     category: Mapped[Optional['UserCategories']] = relationship('UserCategories', back_populates='user_financial_transactions')
