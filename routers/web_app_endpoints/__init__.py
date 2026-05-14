@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from . import forgot_password_router, auth_router, user_router, dashboard_router, categories_router, transactions_router
+from . import forgot_password_router, auth_router, user_router, dashboard_router, categories_router, transactions_router, accounts_router
 
 web_app_router = APIRouter(prefix="/app")
 web_app_router.include_router(forgot_password_router.router)
@@ -8,3 +8,4 @@ web_app_router.include_router(user_router.router)
 web_app_router.include_router(dashboard_router.router)
 web_app_router.include_router(categories_router.router)
 web_app_router.include_router(transactions_router.router)
+web_app_router.include_router(accounts_router.router)

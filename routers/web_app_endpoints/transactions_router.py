@@ -7,9 +7,9 @@ from db.db import get_db
 from schemas.transaction_schemas import TransactionBase, TransactionGetAllResponseModel
 from typing import Optional
 
-router = APIRouter(prefix="/transaction", tags=["app/transactions"])
+router = APIRouter(prefix="/transactions", tags=["app/transactions"])
 
-@router.get("/getAllTransactions", response_model=TransactionGetAllResponseModel)
+@router.get("/get-all", response_model=TransactionGetAllResponseModel)
 def get_all_transactions(
     current_user_id: int = 3, 
     db: Session = Depends(get_db),
